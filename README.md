@@ -25,17 +25,17 @@ Resources
 Scope and Approach
 ------------------
 
-Topics to study
-- Java and C++ fundamentals
-- Implement core data structures
-- Algorithms and sorting
-- System design
-- Operating systems: concurrency
-- Discrete math: combinatorics
+Topic | Approach
+------|---------
+Java/C++ | Review fundamentals from lecture notes
+Data structures | Implement from scratch
+Algorithms and sorting | Review and practice problems
+System design | Practice problems
+Operating systems | Practice problems
+Math | Review discrete math
 
-Method (unless otherwise specified)
-- Practice problems
-- Mock interviews
+Special mention: mock interviews
+
 
 Distractions
 ------------
