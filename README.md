@@ -22,6 +22,21 @@ Resources
 - [Algorithm Design](https://www.amazon.com/Algorithm-Design-Jon-Kleinberg/dp/0321295358)
 
 
+Scope and Approach
+------------------
+
+Topics to study
+- Java and C++ fundamentals
+- Implement core data structures
+- Algorithms and sorting
+- System design
+- Operating systems: concurrency
+- Discrete math: combinatorics
+
+Method (unless otherwise specified)
+- Practice problems
+- Mock interviews
+
 Distractions
 ------------
 
