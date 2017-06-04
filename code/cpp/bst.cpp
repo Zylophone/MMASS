@@ -1,5 +1,6 @@
 #include <iostream>
 #include <set>
+#include <stack>
 #include <cassert>
 
 template <typename T>
@@ -37,6 +38,22 @@ class tree {
     node* root = nullptr;
 
 public:
+    ~tree() {
+        // Avoids stack overflow for deep trees.
+        std::stack<node*> nodes;
+        if (root != nullptr)
+            nodes.push(root);
+        while (!nodes.empty()) {
+            auto n = nodes.top();
+            nodes.pop();
+            if (n->left != nullptr)
+                nodes.push(n->left);
+            if (n->right != nullptr)
+                nodes.push(n->right);
+            delete n;
+        }
+    }
+
     bool contains(const T& data) const {
         auto n = root;
         while (n != nullptr) {
