@@ -42,7 +42,7 @@ public:
         ensure_capacity();
         auto& v = table[idx(data)];
         for (auto& elem : v)
-            if (elem == data)
+            if (cmp(elem, data))
                 return;
         v.push_back(data);
         ++size;
@@ -50,17 +50,19 @@ public:
 
     bool contains(const T& data) {
         for (const auto& elem : table[idx(data)])
-            if (elem == data)
+            if (cmp(elem, data))
                 return true;
         return false;
     }
 
     void remove(const T& data) {
         auto& v = table[idx(data)];
-        auto it = find(v.begin(), v.end(), data);
-        if (it != v.end()) {
-            v.erase(it);
-            --size;
+        for (auto it = v.begin(); it != v.end(); ++it) {
+            if (cmp(*it, data)) {
+                v.erase(it);
+                --size;
+                return;
+            }
         }
     }
 };
