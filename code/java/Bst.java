@@ -1,9 +1,18 @@
 
 public class Bst<T extends Comparable<T>> {
-	public BstNode<T> root;
+
+    private class Node {
+        private T data;
+        private Node left, right;
+        private Node (T data) {
+            this.data = data;
+        }
+    }
+
+    private Node root;
 
 	public boolean contains(T d) {
-        BstNode<T> curr = root;
+        Node curr = root;
         while (curr != null) {
         	if (d.compareTo(curr.data) == 0) {
                 return true;
@@ -17,12 +26,12 @@ public class Bst<T extends Comparable<T>> {
     }
 
 	public void add(T d) {
-		BstNode<T> prev;
-		BstNode<T> curr = root;
+		Node prev;
+		Node curr = root;
 		boolean left;
 		// Handle special case for root.
 		if (curr == null) {
-			root = new BstNode<T>(d);
+			root = new Node(d);
 			return;
 		}
 		// General case after root.
@@ -36,7 +45,7 @@ public class Bst<T extends Comparable<T>> {
 				left = false;
 			}
 			if (curr == null) {
-			    curr = new BstNode<T>(d);
+			    curr = new Node(d);
 				if (left) {
 					prev.left = curr;
 				} else {
@@ -47,9 +56,18 @@ public class Bst<T extends Comparable<T>> {
 		}
 	}
 
+	/*
+	 * Removal strategy for a node, x, with two children:
+	 * Replace data in x with data from immediate next node, x', then
+	 *     prune x' (if it's a leaf) or splice out (otherwise).
+	 * To find x' from x: walk one step down the tree right, then
+	 *     walk down to the left as far as possible.
+	 * To prune or splice out: simply change pointer to x' to point at
+	 *     right child of x'.
+	 */
 	public void remove(T d) {
-		BstNode<T> prev;
-		BstNode<T> curr = root;
+		Node prev;
+		Node curr = root;
 		boolean left;
 		if (curr == null) {
 			return;
@@ -63,12 +81,6 @@ public class Bst<T extends Comparable<T>> {
 			} else if (curr.right == null) {
 				root = root.left;
 			} else {
-                // Replace data in the node with data from immediate next element, then
-                // prune the immediate next (if leaf) or splice out.
-                // To get immediate next: walk one step down the tree right,
-                // then walk down to the left as far as possible.
-                // To prune or splice out: simply replace previous node's pointer to the
-                // node's right child, because nulls.
 			    prev = curr;
 				curr = curr.right;
 				while (curr.left != null) {
@@ -113,20 +125,16 @@ public class Bst<T extends Comparable<T>> {
 						prev.right = curr.left;
 					}
 				} else {
-				    // Replace data in the node with data from immediate next element, then
-				    // prune the immediate next (if leaf) or splice out (if has right child).
-	                // To get immediate next: walk one step down the tree right,
-	                // then walk down to the left as far as possible.
-				    // To prune or splice out: simply replace previous node's pointer to the
-				    // node's right child, because nulls.
-					BstNode<T> toRemove = curr;
+					Node toRemove = curr;
 					prev = curr;
 					curr = curr.right;
 					while (curr.left != null) {
                         prev = curr;
                         curr = curr.left;
                     }
-					// Also handle special case where left was null to begin with.
+					// Handle special case where left was null to begin with.
+					// (Note this special case does not need to be handled above,
+					// because the root special case "cancels out" this one.)
 					if (curr.left == null) {
 					    toRemove.data = curr.data;
 					    toRemove.right = curr.right;
