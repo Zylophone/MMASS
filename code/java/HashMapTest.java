@@ -1,9 +1,9 @@
 import java.util.Random;
 
-public class BstTest {
+public class HashMapTest {
     public static void main(String[] args) throws Exception {
-        Bst<Integer> impl = new Bst<Integer>();
-        java.util.Set<Integer> standard = new java.util.TreeSet<Integer>();
+        HashMap<Integer, Integer> impl = new HashMap<Integer, Integer>(16);
+        java.util.Map<Integer, Integer> standard = new java.util.HashMap<Integer, Integer>();
         Random rand = new Random();
         int[] opcounts = {0, 0, 0};
 
@@ -12,12 +12,21 @@ public class BstTest {
             int op = rand.nextInt(3);
             opcounts[op]++;
             if (op == 0) {
-                if (!impl.contains(data) == standard.contains(data)) {
+                if (impl.get(data) == null) {
+                    if (standard.get(data) != null) {
+                        throw new Exception("Implementation disagrees with Standard somewhere.");
+                    }
+                } else if (standard.get(data) == null) {
+                    if (impl.get(data) != null) {
+                        throw new Exception("Implementation disagrees with Standard somewhere.");
+                    }
+                } else if (!impl.get(data).equals(standard.get(data))) {
                     throw new Exception("Implementation disagrees with Standard somewhere.");
                 }
+
             } else if (op == 1) {
-                impl.add(data);
-                standard.add(data);
+                impl.put(data, data);
+                standard.put(data, data);
             } else if (op == 2) {
                 impl.remove(data);
                 standard.remove(data);
