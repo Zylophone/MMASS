@@ -61,37 +61,28 @@ public class HashMap<K extends Comparable<K>, V extends Comparable<V>> {
         List<Entry> chain = table.get(idx);
         if (chain == null) {
             chain = new ArrayList<>();
-            chain.add(entry);
-        } else {
-            int i;
-            for (i = 0; i < chain.size(); i++) {
-                if (chain.get(i).key.equals(key)) {
-                    chain.set(i, entry);
-                    break;
-                }
-            }
-            if (i == chain.size()) {
-                chain.add(entry);
+            table.set(idx, chain);
+        }
+        for (int i = 0; i < chain.size(); i++) {
+            if (chain.get(i).key.equals(key)) {
+                chain.set(i, entry);
+                return;
             }
         }
+        chain.add(entry);
         numEntries++;
-        table.set(idx, chain);
     }
 
     public void remove(K key) {
         int idx = hashFunc(key.hashCode());
         List<Entry> chain = table.get(idx);
         if (chain != null) {
-            int i;
-            for (i = 0; i < chain.size(); i++) {
+            for (int i = 0; i < chain.size(); i++) {
                 if (chain.get(i).key.equals(key)) {
-                    break;
+                    chain.remove(i);
+                    numEntries--;
+                    return;
                 }
-            }
-            if (i < chain.size()) {
-                chain.remove(i);
-                numEntries--;
-                table.set(idx, chain);
             }
         }
     }
