@@ -37,16 +37,10 @@ void merge_sort(It begin, It end, Cmp cmp = Cmp()) {
     std::vector<typename It::value_type> aux(size);
     auto aux_it = aux.begin();
     for (auto l = begin, r = mid; l != mid || r != end; ++aux_it) {
-        if (l == mid) {
-            *aux_it = std::move(*r++);
-        } else if (r == end) {
-            *aux_it = std::move(*l++);
-        } else if (cmp(*l, *r)) {
-            *aux_it = std::move(*l++);
-        } else {
-            assert(cmp(*r, *l));
-            *aux_it = std::move(*r++);
-        }
+        if      (l == mid)       *aux_it = std::move(*r++);
+        else if (r == end)       *aux_it = std::move(*l++);
+        else if (cmp(*l, *r))    *aux_it = std::move(*l++);
+        else /* (cmp(*r, *l)) */ *aux_it = std::move(*r++);
     }
     for (auto& val : aux) {
         *begin++ = std::move(val);
