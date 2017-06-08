@@ -26,54 +26,57 @@ void insertion_sort(It begin, It end, Cmp cmp = Cmp()) {
     }
 }
 
-template <typename It,
-          typename Cmp = std::less<typename It::value_type>>
-void merge_sort(It begin, It end, Cmp cmp,
-                typename It::value_type aux[]) {
-    auto size = distance(begin, end);
-    if (size <= 1u)
+template <typename InputIt, typename OutputIt, typename Cmp>
+void merge_sort(InputIt src, OutputIt dst, size_t size, bool orig, Cmp cmp) {
+    if (size == 0u)
         return;
-    auto mid = begin + (size >> 1u);
-    merge_sort(begin, mid, cmp, aux), merge_sort(mid, end, cmp, aux);
-    auto aux_it = aux;
-    for (auto l = begin, r = mid; l != mid || r != end; ++aux_it) {
-        if      (l == mid)       *aux_it = std::move(*r++);
-        else if (r == end)       *aux_it = std::move(*l++);
-        else if (cmp(*l, *r))    *aux_it = std::move(*l++);
-        else /* (cmp(*r, *l)) */ *aux_it = std::move(*r++);
+    if (size == 1u) {
+        if (orig) // Moving from original collection to auxiliary array.
+            *dst = std::move(*src);
+        return;
     }
-    for (auto aux_it = aux, e = aux + size; aux_it != e; ++aux_it) {
-        *begin++ = std::move(*aux_it);
+    auto half = size >> 1u;
+    merge_sort(dst, src, half, !orig, cmp);
+    merge_sort(dst + half, src + half, size - half, !orig, cmp);
+    auto mid = src + half, end = src + size, l = src, r = mid;
+    for (auto out = dst; l != mid || r != end; ++out) {
+        if      (l == mid)       *out = std::move(*r++);
+        else if (r == end)       *out = std::move(*l++);
+        else if (cmp(*l, *r))    *out = std::move(*l++);
+        else /* (cmp(*r, *l)) */ *out = std::move(*r++);
     }
 }
 
 template <typename It,
           typename Cmp = std::less<typename It::value_type>>
 void merge_sort(It begin, It end, Cmp cmp = Cmp()) {
-    auto aux = new typename It::value_type[distance(begin, end)];
-    merge_sort(begin, end, cmp, aux);
+    auto size = distance(begin, end);
+    auto aux = new typename It::value_type[size];
+    merge_sort(aux, begin, size, /*orig*/ false, cmp);
     delete[] aux;
 }
 
-int main() {
+template <typename Sort>
+void test(Sort custom_sort) {
     int n = 10000;
     std::vector<int> v(n);
-    for (int i = 0; i < n; ++i) {
+    for (int i = 0; i < n; ++i)
         v[i] = i;
+    random_shuffle(v.begin(), v.end());
+    custom_sort(v.begin(), v.end());
+    assert(is_sorted(v.begin(), v.end()));
+    std::vector<bool> bitmap(n);
+    for (auto i : v)
+        bitmap[i] = true;
+    for (auto b : bitmap) {
+        assert(b);
     }
+}
 
-    random_shuffle(v.begin(), v.end());
-    selection_sort(v.begin(), v.end());
-    assert(is_sorted(v.begin(), v.end()));
-
-    random_shuffle(v.begin(), v.end());
-    insertion_sort(v.begin(), v.end());
-    assert(is_sorted(v.begin(), v.end()));
-
-    random_shuffle(v.begin(), v.end());
-    merge_sort(v.begin(), v.end());
-    assert(is_sorted(v.begin(), v.end()));
-
+int main() {
+    test([](auto begin, auto end) { selection_sort(begin, end); });
+    test([](auto begin, auto end) { insertion_sort(begin, end); });
+    test([](auto begin, auto end) { merge_sort(begin, end); });
     std::cout << "All tests passed" << std::endl;
     return 0;
 }
