@@ -28,23 +28,31 @@ void insertion_sort(It begin, It end, Cmp cmp = Cmp()) {
 
 template <typename It,
           typename Cmp = std::less<typename It::value_type>>
-void merge_sort(It begin, It end, Cmp cmp = Cmp()) {
+void merge_sort(It begin, It end, Cmp cmp,
+                typename It::value_type aux[]) {
     auto size = distance(begin, end);
     if (size <= 1u)
         return;
     auto mid = begin + (size >> 1u);
-    sort(begin, mid, cmp), sort(mid, end, cmp);
-    std::vector<typename It::value_type> aux(size);
-    auto aux_it = aux.begin();
+    merge_sort(begin, mid, cmp, aux), merge_sort(mid, end, cmp, aux);
+    auto aux_it = aux;
     for (auto l = begin, r = mid; l != mid || r != end; ++aux_it) {
         if      (l == mid)       *aux_it = std::move(*r++);
         else if (r == end)       *aux_it = std::move(*l++);
         else if (cmp(*l, *r))    *aux_it = std::move(*l++);
         else /* (cmp(*r, *l)) */ *aux_it = std::move(*r++);
     }
-    for (auto& val : aux) {
-        *begin++ = std::move(val);
+    for (auto aux_it = aux, e = aux + size; aux_it != e; ++aux_it) {
+        *begin++ = std::move(*aux_it);
     }
+}
+
+template <typename It,
+          typename Cmp = std::less<typename It::value_type>>
+void merge_sort(It begin, It end, Cmp cmp = Cmp()) {
+    auto aux = new typename It::value_type[distance(begin, end)];
+    merge_sort(begin, end, cmp, aux);
+    delete[] aux;
 }
 
 int main() {
@@ -65,5 +73,7 @@ int main() {
     random_shuffle(v.begin(), v.end());
     merge_sort(v.begin(), v.end());
     assert(is_sorted(v.begin(), v.end()));
+
+    std::cout << "All tests passed" << std::endl;
     return 0;
 }
