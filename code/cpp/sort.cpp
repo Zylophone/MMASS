@@ -56,6 +56,24 @@ void merge_sort(It begin, It end, Cmp cmp = Cmp()) {
     delete[] aux;
 }
 
+template <typename It,
+          typename Cmp = std::less<typename It::value_type>>
+void quick_sort(It begin, It end, Cmp cmp = Cmp()) {
+    if (distance(begin, end) <= 1u)
+        return;
+    auto p = *begin;
+    auto l = begin, r = end;
+    do --r; while (cmp(p, *r));
+    while (l < r) {
+        std::iter_swap(l, r);
+        do ++l; while (!cmp(p, *l));
+        do --r; while (cmp(p, *r));
+    }
+    auto mid = next(r);
+    quick_sort(begin, mid, cmp);
+    quick_sort(mid, end, cmp);
+}
+
 template <typename Sort>
 void test(Sort custom_sort) {
     int n = 10000;
@@ -77,6 +95,7 @@ int main() {
     test([](auto begin, auto end) { selection_sort(begin, end); });
     test([](auto begin, auto end) { insertion_sort(begin, end); });
     test([](auto begin, auto end) { merge_sort(begin, end); });
+    test([](auto begin, auto end) { quick_sort(begin, end); });
     std::cout << "All tests passed" << std::endl;
     return 0;
 }
