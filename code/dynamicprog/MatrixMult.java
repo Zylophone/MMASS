@@ -20,7 +20,7 @@ public class MatrixMult {
                 }
                 dp[l][r] = Integer.MAX_VALUE;
                 for (int i = l; i < r; i++) {
-                    int poss = n[l] * m[i] * n[r] + dp[l][i] + dp[i+1][r];
+                    int poss = n[l] * m[i] + dp[l][i] + dp[i+1][r];
                     if (poss < dp[l][r]) {
                         dp[l][r] = poss;
                     }

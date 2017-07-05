@@ -20,20 +20,22 @@ find the minimal number of integer multiplications needed to evaluate the matrix
 
 \textbf{Approach}
 
-Note the cost of multiplying $A_{n \times m} \times A_{a \times b}$
-where $m = a$
-is on the order of $n \times m \times b$.
+Note the cost of multiplying $A_{m \times n} \times A_{a \times b}$,
+where $n = a$,
+is on the order of $m \times n \times b$.
 
 First, consider the base case. If there is one matrix, evaluating the matrix product of the matrix and itself requires zero multiplications.
 
-Then, define and solve the subproblem. Consider a set of $x$ matrices. Assume the optimal answer for every contiguous sequence of length 0 to $x-1$ matrices is already known. With this information, find the optimal for all $x$ matrices. The approach can be thought of as finding the boundary $i$ which minimizes the costs of multiplying matrices within the group 0 to $i$, within the group $i+1$ to $x$, and multiplying at the boundary between the two.
+Then, define and solve the subproblem. Consider a set of $x$ matrices. Assume the optimal answer for every contiguous sequence of length 0 to $x-1$ matrices is already known. With this information, find the optimal for all $x$ matrices. The approach can be thought of as finding the boundary $i$ which minimizes the costs of multiplying matrices within the group matrix 1 up to matrix $i$ (exclusive), within the group $i$ through $x$ (inclusive), and multiplying at the boundary between the two.
 
 Thus, the dynamic programming solution is:
+
+Let $dp[l][r]$ be the optimal number of integer multiplications for $\prod\limits_{i \in [l, r)} A_i$.
 \[
   dp[l][r]=
     \begin{cases}
-      0 & \text{if}\ l=r \\
-      \min\limits_{l \leq i < r} (n_l \cdot m_i \cdot n_r + dp[l][i] + dp[i+1][r]) & \text{otherwise}
+      0 & \text{if}\ l=r-1 \\
+      \min\limits_{l < i < r} (n_l \cdot m_i + dp[l][i] + dp[i][r]) & \text{otherwise}
     \end{cases}
 \]
 
